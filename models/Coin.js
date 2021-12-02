@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const {Schema} = mongoose;
 
 const coinSchema = new Schema({
     name: {type: String, unique: true},
-    coingeckoId: String,
     isActive: Boolean,
 });
 
