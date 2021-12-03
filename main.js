@@ -65,13 +65,17 @@ app.post("/login", async (req, res) => {
     if (user === null)
         return res.status(404).json({error: "Cannot find user"});
 
-    const key = new Key({token: encryptPassword(crypto.randomBytes(20)), user});
+    const key = new Key({
+        publicKey: Math.random().toString(36).substr(2, 21),
+        secretKey: Math.random().toString(36).substr(2, 21),
+        user
+    });
     await key.save();
 
     user.keys.push(key._id);
     await user.save();
 
-    res.send({key: key.token});
+    res.send({publicKey: key.publicKey, secretKey: key.secretKey});
 })
 
 // 코인 종류
