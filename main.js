@@ -1,6 +1,5 @@
 const express = require("express");
 const {body, validationResult} = require("express-validator");
-const crypto = require("crypto");
 const axios = require("axios");
 const {encryptPassword, setAuth} = require("./utils");
 
