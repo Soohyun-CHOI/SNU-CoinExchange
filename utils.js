@@ -13,20 +13,24 @@ const setAuth = async (req, res, next) => {
     if (bearer !== "Bearer")
         return res.status(401).json({error: "Wrong Authorization"});
 
-    const publicKey = jwt.decode(token).publicKey;
-    const key = await Key.findOne({publicKey});
-    if (!key) return res.status(404).json({error: "Cannot find user"});
-
     try {
-        jwt.verify(token, key.secretKey);
+        const publicKey = jwt.decode(token).publicKey;
+        const key = await Key.findOne({publicKey});
+        if (!key) return res.status(404).json({error: "Cannot find user"});
+
+        try {
+            jwt.verify(token, key.secretKey);
+        } catch (err) {
+            return res.status(400).json({error: err.name});
+        }
+
+        const user = await User.findOne({_id: key.user._id});
+        if (!user) return res.status(404).json({error: "Cannot find user"});
+
+        req.user = user;
     } catch (err) {
-        return res.status(404).json({error: err.name});
+        return res.status(404).json({error: "Wrong Authorization"});
     }
-
-    const user = await User.findOne({_id: key.user._id});
-    if (!user) return res.status(404).json({error: "Cannot find user"});
-
-    req.user = user;
     return next();
 }
 
